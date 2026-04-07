@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reunión Directores — Gelatina</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+  :root {
+    --bg: #0f0f0f; --surface: #181818; --border: #2a2a2a;
+    --accent: #e8ff47; --accent2: #ff6b35; --text: #f0f0f0;
+    --muted: #888; --tag-bg: #222;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; }
+  header { padding: 48px 40px 32px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
+  header h1 { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px; }
+  header h1 span { color: var(--accent); }
+  header .meta { color: var(--muted); font-size: 13px; text-align: right; }
+  .container { max-width: 860px; margin: 0 auto; padding: 0 40px 80px; }
+  .section { margin-top: 48px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .section-header { background: var(--surface); padding: 18px 24px; display: flex; align-items: center; gap: 14px; cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+  .section-header:hover { background: #202020; }
+  .section-number { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent); background: rgba(232,255,71,0.1); border: 1px solid rgba(232,255,71,0.3); border-radius: 4px; padding: 2px 7px; letter-spacing: 1px; }
+  .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; flex: 1; }
+  .section-tag { font-size: 11px; color: var(--muted); background: var(--tag-bg); border-radius: 20px; padding: 3px 10px; border: 1px solid var(--border); }
+  .toggle-icon { color: var(--muted); font-size: 18px; transition: transform 0.3s; }
+  .section-body { padding: 24px; display: none; flex-direction: column; gap: 16px; }
+  .section-body.open { display: flex; }
+  .toggle-icon.open { transform: rotate(180deg); }
+  .obs-block { background: rgba(232,255,71,0.04); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 16px; }
+  .obs-block h4 { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase; }
+  .obs-block ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .obs-block ul li { padding-left: 16px; position: relative; color: #ccc; font-size: 14px; }
+  .obs-block ul li::before { content: '—'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+  .alert-block { background: rgba(255,107,53,0.06); border-left: 3px solid var(--accent2); border-radius: 0 8px 8px 0; padding: 14px 16px; }
+  .alert-block h4 { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent2); letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase; }
+  .alert-block ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .alert-block ul li { padding-left: 16px; position: relative; color: #ccc; font-size: 14px; }
+  .alert-block ul li::before { content: '!'; position: absolute; left: 2px; color: var(--accent2); font-weight: 700; }
+  .links-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .link-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--tag-bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+  .link-btn:hover { background: rgba(232,255,71,0.1); border-color: var(--accent); }
+  .link-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .info-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .info-pill { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--muted); }
+  .info-pill strong { color: var(--text); }
+  p.note { font-size: 14px; color: #bbb; line-height: 1.65; }
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .subsection-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .status-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-left: 8px; }
+  .status-ok { background: rgba(100,220,100,0.15); color: #6dc96d; }
+  .status-pending { background: rgba(255,200,50,0.15); color: #ffc832; }
+  .status-standby { background: rgba(150,150,150,0.15); color: #999; }
+  .status-alert { background: rgba(255,107,53,0.15); color: var(--accent2); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Temas varios <span>- dementes</span></h1>
+  <div class="meta">Abril 2026<br>Preparado por Magalí Barbatto</div>
+</header>
+<div class="container">
+
+  <!-- 01 -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-number">01</span>
+      <span class="section-title">Organigrama</span>
+      <span class="section-tag">Estructura</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="links-row">
+        <a class="link-btn" href="https://magabarbatto-ops.github.io/organigrama-gelatina/" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Ver organigrama</a>
+        <a class="link-btn" href="https://docs.google.com/presentation/d/1_qnN9XI28mp4ZufjsumaFMNyHh0GzhRq/edit?usp=sharing" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>PPT para trabajar</a>
+      </div>
+      <p class="note">No hubo observaciones puntuales al documento, pero sí generales. Propongo hacer una evaluación en equipo para rearmar la estructura en base a lo que consideremos necesario. Es importante poder encarar esto para reordenar lo que consideremos necesario de cara a la segunda mitad del año.</p>
+      <div class="obs-block">
+        <h4>Problemas estructurales generales</h4>
+        <ul>
+          <li>Viendo el esquema, no hay una figura que mire la totalidad artística/estética como un todo. Hoy es absorbido en parte, y según el proyecto, por Pedro y Soledad, además de todas sus otras tareas.</li>
+          <li>En cuanto al área de producción general, creo que hay que colocar a Sol en diálogo con las demás coordinaciones y no solo por arriba del resto del equipo, dado que cada una lleva adelante proyectos diferenciados.</li>
+          <li>Producción, comercial y contenidos: reforzar el punto de contacto — un chequeo operativo previo para que no se generen proyectos difíciles de cumplir y cansancio en quienes los ejecutan.</li>
+          <li>Comunidad hace muy poco tiempo que entró la coordinadora del área — con 2M+ de seguidores, muy pocas áreas tienen contacto con comunidad. Hay que trabajar más fuerte y debe ser un área que se toque con muchas otras. Lo mismo con las métricas: deben compartirse para que las áreas sepan cómo funcionan los productos y puedan hacer una lectura. Lo digo haciendo un poco de mea culpa, entendiendo lo necesario e importante que es saber el impacto que tiene lo que producimos.</li>
+          <li>RRHH recién se está armando — hasta que funcione, todo recae principalmente sobre mí, y realmente siento que perjudica el resto de las responsabilidades propias de mi rol. Medio border, pero estamos cerca de tener alguien que tome el área — hoy tuvimos una entrevista y mañana otra.</li>
+        </ul>
+      </div>
+      <div class="alert-block">
+        <h4>Problemas puntuales que charlamos y que seguro lo vieron hoy en la reunión, quizás no todo</h4>
+        <ul>
+          <li>Triple dependencia (Pedro, Soledad, Nicolás) — no hay un director claro para la planificación estratégica de las RRSS.</li>
+          <li>Gran parte del equipo hace contenido reactivo (los CMs, que son el 66% del área). De una totalidad de 9 personas, 6 gestionan lo existente. Solo 2 crean contenido nuevo.</li>
+          <li>No hay estrategia de plataformas diferenciada — YouTube, TikTok, Instagram y X tienen lógicas distintas. Nadie tiene eso como función exclusiva.</li>
+          <li>Tienen que acceder al análisis de métricas — nadie lleva lo que funcionó de vuelta a Contenidos o a los programas.</li>
+          <li>La mayor cantidad de publicaciones son extractos del vivo y generación de noticias.</li>
+          <li>Tenemos que usar herramientas de IA para agilizar dinámicas. Opus Clip puede mejorar el trabajo de Belén y Malena, que pasan 3 horas viendo stream para identificar clips manualmente. La plataforma YT y Spotify también necesita una estrategia.</li>
+          <li>YT también tiene que armar una estrategia — la tienen pero hay que plasmarla para que estemos al tanto y también poder experimentar y cambiar en la medida que sea necesario. En cuanto a Spotify, se están subiendo muchos contenidos pero no está funcionando. Hay una evaluación al respecto que van a presentar el jueves para compartir entre todos.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-number">02</span>
+      <span class="section-title">Eventos presenciales</span>
+      <span class="section-tag">Producción</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="subsection-title">GET — Gira Pedro Rosemblat</div>
+      <div class="obs-block">
+        <h4>Pendiente definir</h4>
+        <ul>
+          <li>¿Cómo se estructura el equipo? ¿Ya está cerrado?</li>
+          <li>¿Se arma un esquema presupuestario? ¿Van a porcentaje de borderaux las personas que van a participar?</li>
+          <li>¿Qué roles faltan? ¿Quién hace la producción integral?</li>
+          <li>Para avanzar en reservas de espacios (CABA, interior, España) se necesita un estimado de fechas.</li>
+          <li>Una carpeta/presentación ayudaría a que las salas abran disponibilidad y para buscar sponsoreos.</li>
+          <li>¿La técnica está en desarrollo? — hay que presupuestarla.</li>
+        </ul>
+      </div>
+      <div class="divider"></div>
+      <div class="subsection-title">CAD — Congreso Argentino de Digitalidad <span class="status-badge status-pending">En construcción</span></div>
+      <p class="note">Estuve armando propuestas en base a lo que nos envió Soledad — es un documento de trabajo para subirnos y trabajarlo. Tiene brief del proyecto, mapeo de salas (CABA y otras provincias) cada sala tiene su link, cronograma estimado y presupuesto de cobertura. Es para que trabajemos sobre esto y lo desarmemos.</p>
+      <div class="links-row">
+        <a class="link-btn" href="https://magabarbatto-ops.github.io/cad_documento-trabajo-interno/CAD_documento_V2.html" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Ver documento CAD</a>
+      </div>
+      <div class="obs-block">
+        <h4>Pendiente definir</h4>
+        <ul>
+          <li>¿Con quién avanzamos en la reserva y mapeo de salas? ¿Socias?</li>
+          <li>⚠️ Es importante ir pensando en un camino posible: ¿qué espacios nos imaginamos, cuáles nos gustan y cuántas charlas? Todo es aproximado por ahora, pero hay que empezar a definir para poder avanzar.</li>
+        </ul>
+      </div>
+      <div class="divider"></div>
+      <div class="subsection-title">Mundial 2026 <span class="status-badge status-alert">Definiciones esta semana</span></div>
+      <div class="links-row">
+        <a class="link-btn" href="https://magabarbatto-ops.github.io/Mundial-2026-v5/Gelatina_Mundial_2026.html" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Ver proyecto</a>
+        <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1JecEq_5ziq_dlBzWE79xjsWoAp0VF48R/edit?usp=sharing&ouid=102995599581858755675&rtpof=true&sd=true" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Presupuesto desglosado</a>
+      </div>
+      <div class="obs-block">
+        <h4>Estado y pendientes</h4>
+        <ul>
+          <li>Hay tres opciones de viaje — la más ajustada es la tercera, que implica un viaje desdoblado.</li>
+          <li>Propongo esta semana como tope para visas y mediados de mes para gestionar todo lo necesario.</li>
+          <li>Flujo: definir opción → sacar visas → Pedro confirma acreditaciones → aéreos.</li>
+          <li>Emilio Guazzaroni va al mundial con Jero Freixas hasta el primer partido de Argentina. Luego se suma al equipo de Gelatina hasta la fecha que definamos. Ya se lo comenté a Soledad y a Tomi.</li>
+          <li>Juan Oswald es productor y camarógrafo, tiene equipo propio. Como backup, Mati Pelliccioni puede ser una buena opción — viaja con TyC pero no cree tener exclusividad. Me va a confirmar disponibilidad.</li>
+        </ul>
+      </div>
+      <div class="divider"></div>
+      <div class="subsection-title">Aquí Argentina Cabaret</div>
+      <div class="obs-block">
+        <h4>Estado — ¿Se hace o no se hace?</h4>
+        <ul>
+          <li>Gabriela Borrelli me lo planteó y me comentó que también lo habló con Soledad, está rosqueando — quiero rechequear esto.</li>
+          <li>Le comenté que por ahora no estamos para encarar ningún evento en vivo.</li>
+          <li>Si se hiciera: estimado de $700k–$1M según gastos y sala. Podría ser en La Paz Arriba, donde ya se armó un nicho y puede llegar a venderse.</li>
+          <li>¿Qué implica para el equipo? Horas extras (productora, Gioti o alguien extra que opere) y carga a Contenidos para armar ejes y publicaciones.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-number">03</span>
+      <span class="section-title">On demand</span>
+      <span class="section-tag">Proyectos</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="subsection-title">Siglo XXI <span class="status-badge status-ok">Ejecutado</span></div>
+      <p class="note">Ya está pago y ejecutado. Se estrenó el primer capítulo el 6 de abril — se estrenarán dos por semana.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Permitime dudar <span class="status-badge status-ok">Ejecutado</span></div>
+      <p class="note">Pago y ejecutado según presupuesto. Desde Gelatina se realizó la producción integral: armado de equipo, ejecución de presupuesto, cronogramas, logística y post producción. Se rindió el 100% de los gastos, quedó en cero. Lo que resta cotizar es la presentación, que depende del espacio que consigamos. El miércoles Kinki y Teo van a ver un posible lugar.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Fusilamientos con Julia Rosemberg <span class="status-badge status-pending">Presupuesto pasado</span></div>
+      <div class="links-row">
+        <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1LUd4Bcaw9iUaz4hNGLR9iU26lc9n9bwApDvuy3fkKvE/edit?usp=sharing" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>3 versiones de presupuesto</a>
+        <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1mGlmafBBeCB_Oq9P7OWgKAoXz0yrmPdpERFD320SFWs/edit?usp=sharing" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Referencia 50/76</a>
+      </div>
+      <p class="note">Hicimos tres versiones con diferentes diseños de producción y por ende diferentes costos. Entiendo que vamos a avanzar con la tercera, que es formato columna (sin guionista, sin archivista). En cuanto al documental 50/76, la mayor parte del presupuesto está volcada en RRHH. El telón y escenografía tienen costo cero, el equipo de sonido $100k. Esto se produjo en marzo mientras estábamos con el lanzamiento, por ese motivo el equipo AV no pudo agarrar el proyecto al 100%.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Bang Bang <span class="status-badge status-pending">En desarrollo</span></div>
+      <div class="links-row">
+        <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1HtWCcG6pF_Fz7JmXOjm1UZKJOrGK5laHgMXIfwlfMbY/edit?usp=sharing" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Presupuesto</a>
+      </div>
+      <div class="obs-block">
+        <h4>A definir en reunión</h4>
+        <ul>
+          <li>¿Hacemos on demand o vamos directo al presencial?</li>
+          <li>¿El formato es viable? Lo más caro es el guionista, el resto son configuraciones con utilería.</li>
+        </ul>
+      </div>
+      <div class="divider"></div>
+      <div class="subsection-title">Comedia <span class="status-badge status-pending">En prueba</span></div>
+      <div class="links-row">
+        <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1i1kMVF7WTKTMXJGRCxce_HSvCfv1FWTzQf-0O1qSL80/edit?usp=sharing" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Presupuesto</a>
+      </div>
+      <p class="note">Avanza con el presupuesto estimado (muy ajustado). Mañana hacemos una prueba con la configuración que nos permita el estudio. Adri Lakerman está chequeando posibles entrevistados — no le está siendo fácil porque todos tienen muchos proyectos, pero se está acercando. Lo sigue Majo, en contacto con él.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Bestsellers <span class="status-badge status-ok">Activo</span></div>
+      <div class="links-row">
+        <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1X3GJcaalPQFpoPSm5R_IkuGQrGBeiqRBiFbFycjhR70/edit?usp=sharing" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Presupuesto</a>
+      </div>
+      <p class="note">Corriendo con el presupuesto cargado. Produce Yamila.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Donde la puedo ver <span class="status-badge status-standby">No activado</span></div>
+      <p class="note">Proyecto presentado por Adri Lakerman (cine). No está activado.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">El verso de la cultura <span class="status-badge status-pending">Mayo</span></div>
+      <p class="note">Proyecto de Pedro Yagüe y Navas. No se graba hasta fines de mayo. Produce Yamila.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Esto no lo escuchaste <span class="status-badge status-standby">Stand by</span></div>
+      <p class="note">Stand by por parte de la marca y de Manu Buscalia, que vuelve a mediados de abril.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Samsung Galaxy <span class="status-badge status-pending">En proceso</span></div>
+      <p class="note">Avanzamos con los coproductores que tienen el contacto con la marca. Marcos nos debe unos textos para completar la presentación al cliente.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">El Matadero <span class="status-badge status-pending">A definir</span></div>
+      <div class="obs-block">
+        <ul>
+          <li>Es un proyecto ambicioso tal como está planteado — complejo presupuestariamente (viaje con pernocte, animales, golpes).</li>
+          <li>Hay opción A (máxima) y opción B (más acotada). También hay una versión simbólica con locación genérica.</li>
+          <li>Se está trabajando el presupuesto. Quisiera que lo charlemos y empecemos a barajar posibilidades reales.</li>
+        </ul>
+      </div>
+      <div class="links-row">
+        <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1o71Ge5C2a6W9g9glhgbt1wJfIhXIT1TB/edit?usp=sharing&ouid=102995599581858755675&rtpof=true&sd=true" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Presupuesto desglosado</a>
+        <a class="link-btn" href="https://docs.google.com/document/d/1p7XQVJ_s8Rbmd897DNNsiWFiAqY41WEH/edit?usp=sharing&ouid=102995599581858755675&rtpof=true&sd=true" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Desglose de producción</a>
+      </div>
+      <div class="divider"></div>
+      <div class="subsection-title">Domingo Bus <span class="status-badge status-pending">A definir</span></div>
+      <div class="links-row">
+        <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1fQf_fnh0AXq-2dBVHUNAqWf64ZyS1U1duKcfxMADzHg/edit?usp=sharing" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Presupuesto estimado (~$5M) sin cachet de actores</a>
+      </div>
+      <div class="obs-block">
+        <h4>Cosas a resolver</h4>
+        <ul>
+          <li>¿Lo hacemos? ¿Cuándo? ¿Qué estructura planteamos?</li>
+          <li>¿Quién hace la cámara de la pastilla con Ajaka (fuera del estudio)? No está contemplado como extra — hay que sumarlo.</li>
+          <li>Hablé con Charo y le planteé un presupuesto estimado ~$5M, y que necesitaba saber qué estima para Camila, Ajaka, Quintín, etc. Luego Charo le comentó a Pedro y Felipe que no le va a alcanzar. Quisiera ver cómo avanzar o si puedo hablar con Charo para ajustar.</li>
+        </ul>
+      </div>
+      <div class="divider"></div>
+      <div class="subsection-title">Bombo — Proyecto Marcos Aramburu</div>
+      <div class="links-row">
+        <a class="link-btn" href="https://docs.google.com/document/d/1UJI8HFQV5y6AqiJ1LvtBSKLlmNs1saYLQZWipo6j6zM/edit?tab=t.0" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Ver propuesta Bombo</a>
+      </div>
+      <p class="note">Quiero que lo revisemos en la reunión. Ya les propuse una reunión a Sole y Marcos para avanzar.</p>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-number">04</span>
+      <span class="section-title">Vivo + RRSS</span>
+      <span class="section-tag">Programación</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="subsection-title">Programa de fútbol — Miércoles 16h</div>
+      <div class="links-row">
+        <a class="link-btn" href="https://docs.google.com/spreadsheets/d/1yfAUbOJ0FSA-v_ETelTnHAyyQgNmxzL2L-F8O8W8eVg/edit?usp=sharing" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Presupuesto mensual</a>
+      </div>
+      <p class="note">Qué nos falta: cerrar nombre y gráfica. Realizar spot y separadores. Apuntamos a salir el 15/4.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Informes — Alan y Mayra Arena</div>
+      <div class="obs-block">
+        <h4>A definir</h4>
+        <ul>
+          <li>Los informes de Alan y Mayra se pueden vehiculizar del mismo modo que los de Mati Colombati — costo aproximado $300k por informe.</li>
+          <li>Creo que la mejor manera sería sacarlos del esquema de AV de Gelatina.</li>
+          <li>En el caso de Mayra Arena hay que sumarle un honorario — ¿qué pensamos? ¿Cuánto podemos destinar?</li>
+        </ul>
+      </div>
+      <div class="divider"></div>
+      <div class="subsection-title">Posible movilero deportivo — Diego Costa</div>
+      <div class="links-row">
+        <a class="link-btn" href="https://www.instagram.com/reel/DUHMymIgHDh/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Ver reel de Diego Costa</a>
+      </div>
+      <p class="note">Podría salir en vivo o hacer informes en el programa de fútbol (VIVO) y generar noticias para armar carretes (RRSS). Si están de acuerdo lo contacto. ¿Qué opinan?</p>
+    </div>
+  </div>
+
+  <!-- 05 -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-number">05</span>
+      <span class="section-title">Herramientas IA</span>
+      <span class="section-tag">Infraestructura</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="subsection-title">Herramienta IA para Redes, Diseño y AV — presentada por Príncipe <span class="status-badge status-pending">Definir</span></div>
+      <div class="info-row">
+        <div class="info-pill"><strong>Costo:</strong> USD 150,90/mes</div>
+        <div class="info-pill"><strong>Créditos:</strong> 8.400/mes</div>
+        <div class="info-pill"><strong>Usuarios:</strong> 12</div>
+      </div>
+      <p class="note">Esta cantidad de créditos es en base al esquema planteado desde las coordinaciones de YT, RRSS y DG. Si a fin de mes nos quedamos sin créditos, se pueden comprar paquetes adicionales. Si todos los meses se necesitan más, se repacta el abono.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Herramienta IA para AV (adicional) <span class="status-badge status-pending">Pendiente presupuesto business</span></div>
+      <div class="info-row">
+        <div class="info-pill"><strong>Costo:</strong> USD 30/mes</div>
+      </div>
+      <p class="note">El equipo de AV solicita esta herramienta adicional. Los créditos del plan actual se agotan muy rápido. En cuanto tenga el presupuesto business lo comparto. Va a sumar para la realización de IA generativa y también tiene herramientas de edición que pueden colaborar para la realización de shorts.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">🔴 DINESAT — Renovación / Compra <span class="status-badge status-alert">Importante · Tomás</span></div>
+      <div class="info-row">
+        <div class="info-pill"><strong>Renovación anual:</strong> $970.000</div>
+        <div class="info-pill"><strong>Compra del soft:</strong> $2.300.000</div>
+      </div>
+      <p class="note">DINESAT es el software de operación de sonido que utilizamos — permite automatizar la carga de archivos de sonido, la programación, la emisión de audio y la creación de botoneras. Pagamos un año completo y nos salió $970k. La compra del soft nos sale $2.3M y ya nos queda. Quizás no sea el mejor momento para invertir, pero si lo podemos pagar con tarjeta puede resultarnos conveniente.</p>
+      <div class="links-row">
+        <a class="link-btn" href="https://www.dinesat.com/radio/ar/#buy" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Ver opciones de compra DINESAT</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div class="section">
+    <div class="section-header" onclick="toggle(this)">
+      <span class="section-number">06</span>
+      <span class="section-title">Varios</span>
+      <span class="section-tag">General</span>
+      <span class="toggle-icon">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="subsection-title">Estudio B</div>
+      <p class="note">Ya empezamos a desocuparlo. Vamos a ver si con Tomy y si Animal podemos reacondicionarlo. Al momento vamos a rearmarlo con lo que tenemos disponible en el estudio.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Sillas técnica</div>
+      <p class="note">Tenemos que comprar sillas para la zona técnica del estudio. Si no podemos reemplazarlas todas, vamos a comprar para los operadores.</p>
+      <div class="divider"></div>
+      <div class="subsection-title">Storage — NAS</div>
+      <p class="note">Tenemos que comprar discos para acrecentar el storage del NAS y poder conservar archivos AV.</p>
+    </div>
+  </div>
+
+</div>
+<script>
+  function toggle(header) {
+    const body = header.nextElementSibling;
+    const icon = header.querySelector('.toggle-icon');
+    body.classList.toggle('open');
+    icon.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
